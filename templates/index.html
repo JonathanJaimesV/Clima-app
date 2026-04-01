@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Atmosfera — Actividad 1</title>
+  <title>Atmosfera — MVP</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -21,10 +21,10 @@
         <span class="logo-symbol">◌</span>
         <span class="logo-text">atmosfera</span>
       </div>
-      <span class="badge">Actividad 1</span>
+      <span class="badge">MVP</span>
     </header>
 
-    <!-- ══ BIENVENIDA ══ -->
+    <!-- ══ HERO — ACTIVIDAD 1 ══ -->
     <section class="hero">
       <h1 class="hero-title">
         Bienvenido a<br/>
@@ -32,11 +32,11 @@
       </h1>
       <p class="hero-sub">
         Tu asistente de clima con inteligencia artificial.<br/>
-        Ciudad consultada: <strong>{{ ciudad }}, {{ pais }}</strong>
+        Ciudad: <strong>{{ ciudad }}, {{ pais }}</strong>
       </p>
     </section>
 
-    <!-- ══ TARJETA PRINCIPAL ══ -->
+    <!-- ══ TARJETA CLIMA — ACTIVIDAD 1 ══ -->
     <div class="weather-card">
       <div class="weather-card__top">
         <div class="weather-card__location">
@@ -49,9 +49,9 @@
         </div>
       </div>
 
-      <!-- Operaciones básicas -->
+      <!-- Operaciones básicas — Actividad 1 -->
       <div class="calc-section">
-        <h3 class="calc-title">Operaciones básicas</h3>
+        <h3 class="calc-title">Operaciones básicas — Actividad 1</h3>
         <div class="calc-grid">
           <div class="calc-item">
             <span class="calc-label">Conversión °C → °F</span>
@@ -71,43 +71,37 @@
         </div>
       </div>
 
-      <!-- Variables del clima -->
+      <!-- Stats -->
       <div class="weather-card__stats">
         <div class="stat">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <span>{{ humedad }}%</span>
-          <label>Humedad</label>
+          <span>{{ humedad }}%</span><label>Humedad</label>
         </div>
         <div class="stat">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
-          <span>{{ velocidad_viento }} km/h</span>
-          <label>Viento</label>
+          <span>{{ velocidad_viento }} km/h</span><label>Viento</label>
         </div>
         <div class="stat">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>{{ visibilidad }} km</span>
-          <label>Visibilidad</label>
+          <span>{{ visibilidad }} km</span><label>Visibilidad</label>
         </div>
         <div class="stat">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-          <span>{{ nubosidad }}%</span>
-          <label>Nubosidad</label>
+          <span>{{ nubosidad }}%</span><label>Nubosidad</label>
         </div>
         <div class="stat">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-          <span>{{ sensacion }}°C</span>
-          <label>Sensación</label>
+          <span>{{ sensacion }}°C</span><label>Sensación</label>
         </div>
         <div class="stat">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-          <span>{{ temperatura }}°C</span>
-          <label>Temperatura</label>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/></svg>
+          <span>{{ temperatura }}°C</span><label>Temperatura</label>
         </div>
       </div>
     </div>
 
-    <!-- ══ RECOMENDACIÓN ══ -->
-    <div class="rec-card">
+    <!-- ══ RECOMENDACIÓN — ACTIVIDAD 1 ══ -->
+    <div class="rec-card" style="margin-bottom:16px;">
       <span class="rec-card__icon">✨</span>
       <div>
         <p class="rec-card__label">Recomendación del día</p>
@@ -115,9 +109,9 @@
       </div>
     </div>
 
-    <!-- ══ VARIABLES (como print() en consola) ══ -->
-    <div class="vars-section">
-      <h3 class="vars-title">Variables declaradas en atmosfera.py</h3>
+    <!-- ══ VARIABLES — ACTIVIDAD 1 ══ -->
+    <div class="vars-section" style="margin-bottom:32px;">
+      <h3 class="vars-title">Variables declaradas — Actividad 1</h3>
       <div class="vars-grid">
         <div class="var-row"><span class="var-name">ciudad</span><span class="var-type">str</span><span class="var-value">"{{ ciudad }}"</span></div>
         <div class="var-row"><span class="var-name">pais</span><span class="var-type">str</span><span class="var-value">"{{ pais }}"</span></div>
@@ -129,6 +123,72 @@
         <div class="var-row"><span class="var-name">nubosidad</span><span class="var-type">int</span><span class="var-value">{{ nubosidad }}</span></div>
         <div class="var-row"><span class="var-name">recomendacion</span><span class="var-type">str</span><span class="var-value">"{{ recomendacion[:30] }}…"</span></div>
       </div>
+    </div>
+
+    <!-- ══ MENÚ — ACTIVIDADES 2 & 3 ══ -->
+    <div class="menu-card">
+      <div class="menu-header">
+        <span class="menu-header__title">MENÚ DEL SISTEMA — ACTIVIDADES 2 & 3</span>
+        <span class="menu-header__sub">Seleccione una opción / Select an option</span>
+      </div>
+
+      <div class="menu-options">
+        <button class="menu-option" onclick="ejecutar(1)">
+          <span class="menu-option__num">1</span>
+          <span class="menu-option__text">Ver clima actual</span>
+          <span class="menu-option__arrow">→</span>
+        </button>
+        <button class="menu-option" onclick="ejecutar(2)">
+          <span class="menu-option__num">2</span>
+          <span class="menu-option__text">Convertir °C a °F</span>
+          <span class="menu-option__arrow">→</span>
+        </button>
+        <button class="menu-option" onclick="ejecutar(3)">
+          <span class="menu-option__num">3</span>
+          <span class="menu-option__text">Calcular índice de calor</span>
+          <span class="menu-option__arrow">→</span>
+        </button>
+        <button class="menu-option" onclick="ejecutar(4)">
+          <span class="menu-option__num">4</span>
+          <span class="menu-option__text">Probabilidad de lluvia</span>
+          <span class="menu-option__arrow">→</span>
+        </button>
+        <button class="menu-option" onclick="ejecutar(5)">
+          <span class="menu-option__num">5</span>
+          <span class="menu-option__text">Promedio de temperaturas del día</span>
+          <span class="menu-option__arrow">→</span>
+        </button>
+        <button class="menu-option menu-option--exit" onclick="salir()">
+          <span class="menu-option__num">6</span>
+          <span class="menu-option__text">Salir / Exit</span>
+          <span class="menu-option__arrow">✕</span>
+        </button>
+      </div>
+
+      <div class="console-input">
+        <span class="console-prompt">Seleccione una opción:</span>
+        <input id="console-field" type="number" min="1" max="6" placeholder="1–6" />
+        <button onclick="ejecutarConsola()">Ejecutar</button>
+      </div>
+
+      <p id="error-msg" class="error-msg hidden">
+        ⚠ Opción inválida. Ingrese un número del 1 al 6.
+      </p>
+    </div>
+
+    <!-- ══ RESULTADO ══ -->
+    <div id="resultado-section" class="resultado-section hidden">
+      <h2 id="resultado-titulo" class="resultado-titulo">—</h2>
+      <div id="resultado-grid" class="resultado-grid"></div>
+      <button class="btn-volver" onclick="volver()">← Volver al menú</button>
+    </div>
+
+    <!-- ══ SALIDA ══ -->
+    <div id="salida-section" class="salida-section hidden">
+      <span class="salida-icon">◌</span>
+      <h2>Saliendo del sistema…</h2>
+      <p>Gracias por usar Atmosfera.</p>
+      <button class="btn-volver" onclick="volver()">← Volver al menú</button>
     </div>
 
   </div>
