@@ -1,9 +1,10 @@
 /**
  * app.js — Atmosfera
- * Menú interactivo con todas las actividades integradas.
- * Interactive menu with all activities integrated.
+ * Maneja el menú interactivo, búsqueda con API + IA y renderizado.
+ * Handles interactive menu, API + AI search and rendering.
  */
 
+/* ── Referencias DOM / DOM References ────────── */
 const menuSection      = document.getElementById('menu-section');
 const resultadoSection = document.getElementById('resultado-section');
 const busquedaSection  = document.getElementById('busqueda-section');
@@ -13,10 +14,14 @@ const resultadoTitulo  = document.getElementById('resultado-titulo');
 const resultadoGrid    = document.getElementById('resultado-grid');
 const errorMsg         = document.getElementById('error-msg');
 const consoleField     = document.getElementById('console-field');
+const recsSection      = document.getElementById('recs-section');
+const recsGrid         = document.getElementById('recs-grid');
+const topbarLoader     = document.getElementById('topbar-loader');
 
 const SECTIONS = [resultadoSection, busquedaSection, reporteSection, salidaSection];
+const REC_ICONS = ['👔', '☂️', '🏃', '🚗', '💧', '✨'];
 
-/* ── Partículas de fondo / Background particles ── */
+/* ── Partículas de fondo / Background particles ─ */
 (function () {
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
@@ -45,27 +50,83 @@ const SECTIONS = [resultadoSection, busquedaSection, reporteSection, salidaSecti
   window.addEventListener('resize', () => { resize(); pts = mk(); });
 })();
 
-/* ── Navegación / Navigation ── */
+/* ── Navegación / Navigation ─────────────────── */
 function ocultarTodo() {
   SECTIONS.forEach(s => s.classList.add('hidden'));
   menuSection.classList.add('hidden');
 }
-
-function mostrarSeccion(sec) {
-  ocultarTodo();
-  sec.classList.remove('hidden');
-}
-
-window.volver = function () {
-  ocultarTodo();
-  menuSection.classList.remove('hidden');
-  hideError();
-};
-
-window.mostrarSalida  = function () { mostrarSeccion(salidaSection); };
+function mostrarSeccion(sec) { ocultarTodo(); sec.classList.remove('hidden'); }
+window.volver = function () { ocultarTodo(); menuSection.classList.remove('hidden'); hideError(); };
+window.mostrarSalida   = function () { mostrarSeccion(salidaSection); };
 window.mostrarBusqueda = function () { mostrarSeccion(busquedaSection); };
 
-/* ── Menú principal / Main menu ── */
+/* ── Búsqueda principal con API + IA ─────────── */
+window.buscarCiudad = async function (ciudad) {
+  if (!ciudad.trim()) return;
+  topbarLoader.classList.remove('hidden');
+
+  try {
+    const res  = await fetch(`/api/buscar?ciudad=${encodeURIComponent(ciudad)}`);
+    const data = await res.json();
+
+    if (data.error) {
+      alert(data.error); topbarLoader.classList.add('hidden'); return;
+    }
+
+    // Actualizar sidebar con datos nuevos / Update sidebar with new data
+    const w = data.weather;
+    document.getElementById('s-ciudad').textContent  = w.ciudad;
+    document.getElementById('s-pais').textContent    = w.pais;
+    document.getElementById('s-temp').textContent    = w.temp;
+    document.getElementById('s-desc').textContent    = w.descripcion;
+    document.getElementById('s-sens').textContent    = w.sensacion + '°';
+    document.getElementById('s-hum').textContent     = w.humedad + '%';
+    document.getElementById('s-viento').textContent  = w.viento;
+
+    // Actualizar KPIs del topbar / Update topbar KPIs
+    const tf  = Math.round(w.temp * 9/5 + 32);
+    const idx = Math.round((w.temp + w.humedad * 0.1) * 10) / 10;
+    const dif = Math.round((w.sensacion - w.temp) * 10) / 10;
+    document.getElementById('t-f').textContent   = tf + '°F';
+    document.getElementById('t-idx').textContent = idx;
+    document.getElementById('t-dif').textContent = '+' + dif + '°';
+    document.getElementById('t-vis').textContent = w.visibilidad + ' km';
+    document.getElementById('t-nub').textContent = w.nubosidad + '%';
+
+    // Mostrar recomendaciones de IA / Show AI recommendations
+    if (data.recomendaciones && data.recomendaciones.length) {
+      recsGrid.innerHTML = '';
+      data.recomendaciones.forEach((rec, i) => {
+        const card = document.createElement('div');
+        card.className = 'rec-card';
+        card.innerHTML = `<span class="rec-card__icon">${REC_ICONS[i] ?? '💡'}</span><span>${escapeHtml(rec)}</span>`;
+        recsGrid.appendChild(card);
+      });
+      // Actualizar rec en sidebar / Update rec in sidebar
+      document.getElementById('s-rec').textContent = data.recomendaciones[0] ?? '';
+      recsSection.classList.remove('hidden');
+    }
+
+  } catch (e) {
+    console.error(e);
+  } finally {
+    topbarLoader.classList.add('hidden');
+  }
+};
+
+/* ── Input sidebar / Sidebar input ───────────── */
+document.getElementById('sidebar-btn').addEventListener('click', () => {
+  const v = document.getElementById('sidebar-input').value.trim();
+  if (v) buscarCiudad(v);
+});
+document.getElementById('sidebar-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const v = e.target.value.trim();
+    if (v) buscarCiudad(v);
+  }
+});
+
+/* ── Menú opciones / Menu options ────────────── */
 window.ejecutar = async function (opcion) {
   hideError();
   if (opcion === 8) { mostrarSalida(); return; }
@@ -82,13 +143,11 @@ window.ejecutarConsola = function () {
   if (isNaN(val) || val < 1 || val > 8) { showError(); return; }
   if (val === 6) { mostrarBusqueda(); consoleField.value = ''; return; }
   if (val === 7) { ejecutarReporte(); consoleField.value = ''; return; }
-  ejecutar(val);
-  consoleField.value = '';
+  ejecutar(val); consoleField.value = '';
 };
-
 consoleField.addEventListener('keydown', e => { if (e.key === 'Enter') ejecutarConsola(); });
 
-/* ── Renderizar resultado / Render result ── */
+/* ── Renderizar resultado / Render result ────── */
 function mostrarResultado(titulo, datos) {
   resultadoTitulo.textContent = titulo;
   resultadoGrid.innerHTML = '';
@@ -102,7 +161,7 @@ function mostrarResultado(titulo, datos) {
   mostrarSeccion(resultadoSection);
 }
 
-/* ── Búsqueda de ciudad (Actividad 5) / City search ── */
+/* ── Búsqueda en diccionario / Dictionary search */
 window.ejecutarBusqueda = async function () {
   const termino = document.getElementById('search-input').value;
   if (!termino.trim()) return;
@@ -120,13 +179,12 @@ window.ejecutarBusqueda = async function () {
     });
   } catch (e) { console.error(e); }
 };
-
 document.addEventListener('DOMContentLoaded', () => {
   const si = document.getElementById('search-input');
   if (si) si.addEventListener('keydown', e => { if (e.key === 'Enter') ejecutarBusqueda(); });
 });
 
-/* ── Reporte profesional (Actividad 5) / Professional report ── */
+/* ── Reporte / Report ────────────────────────── */
 window.ejecutarReporte = async function () {
   mostrarSeccion(reporteSection);
   try {
@@ -136,6 +194,9 @@ window.ejecutarReporte = async function () {
   } catch (e) { console.error(e); }
 };
 
-/* ── Error / validación ── */
+/* ── Helpers ─────────────────────────────────── */
 function showError() { errorMsg.classList.remove('hidden'); }
 function hideError() { errorMsg.classList.add('hidden'); }
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}

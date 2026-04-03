@@ -15,55 +15,80 @@
   <canvas id="bg-canvas"></canvas>
 
   <!-- ══ SIDEBAR ══ -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar__brand">
       <span class="sidebar__dot"></span>
       <span class="sidebar__name">atmosfera</span>
     </div>
 
+    <!-- Buscador en sidebar / Sidebar search -->
+    <div class="sidebar__search">
+      <input id="sidebar-input" type="text" placeholder="Buscar ciudad…" autocomplete="off" spellcheck="false"/>
+      <button id="sidebar-btn" title="Buscar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+
+    <!-- Datos del clima en sidebar / Sidebar weather data -->
     <div class="sidebar__location">
-      <p class="sidebar__city">{{ ciudad }}</p>
-      <p class="sidebar__country">{{ pais }}</p>
+      <p class="sidebar__city" id="s-ciudad">{{ ciudad }}</p>
+      <p class="sidebar__country" id="s-pais">{{ pais }}</p>
     </div>
 
     <div class="sidebar__temp-big">
-      <span class="sidebar__deg">{{ temperatura }}</span>
+      <span class="sidebar__deg" id="s-temp">{{ temperatura }}</span>
       <span class="sidebar__unit">°C</span>
     </div>
-    <p class="sidebar__desc">{{ descripcion }}</p>
+    <p class="sidebar__desc" id="s-desc">{{ descripcion }}</p>
 
     <div class="sidebar__stats">
       <div class="sidebar__stat">
-        <span class="sidebar__stat-val">{{ sensacion }}°</span>
+        <span class="sidebar__stat-val" id="s-sens">{{ sensacion }}°</span>
         <span class="sidebar__stat-lbl">Sensación</span>
       </div>
       <div class="sidebar__stat">
-        <span class="sidebar__stat-val">{{ humedad }}%</span>
+        <span class="sidebar__stat-val" id="s-hum">{{ humedad }}%</span>
         <span class="sidebar__stat-lbl">Humedad</span>
       </div>
       <div class="sidebar__stat">
-        <span class="sidebar__stat-val">{{ viento }}</span>
+        <span class="sidebar__stat-val" id="s-viento">{{ viento }}</span>
         <span class="sidebar__stat-lbl">km/h</span>
       </div>
     </div>
 
-    <div class="sidebar__rec">
+    <div class="sidebar__rec" id="sidebar-rec">
       <span class="sidebar__rec-icon">✦</span>
-      <p class="sidebar__rec-text">{{ recomendacion }}</p>
+      <p class="sidebar__rec-text" id="s-rec">{{ recomendacion }}</p>
+    </div>
+
+    <!-- Ciudades precargadas / Preloaded cities -->
+    <div class="sidebar__cities">
+      <p class="sidebar__cities-title">Ciudades precargadas</p>
+      {% for c in ciudades_lista %}
+      <button class="sidebar__city-btn" onclick="buscarCiudad('{{ c.nombre }}')">
+        {{ c.nombre }}
+        <span>{{ c.temp }}°C</span>
+      </button>
+      {% endfor %}
     </div>
   </aside>
 
   <!-- ══ MAIN ══ -->
   <main class="main">
 
-    <!-- Top bar -->
+    <!-- Topbar KPIs -->
     <div class="topbar">
       <div class="topbar__kpis">
-        <div class="kpi"><span class="kpi__val">{{ temp_f }}°F</span><span class="kpi__lbl">Fahrenheit</span></div>
-        <div class="kpi"><span class="kpi__val">{{ indice }}</span><span class="kpi__lbl">Índice calor</span></div>
-        <div class="kpi"><span class="kpi__val">+{{ dif_sens }}°</span><span class="kpi__lbl">Dif. sensación</span></div>
-        <div class="kpi"><span class="kpi__val">{{ visibilidad }} km</span><span class="kpi__lbl">Visibilidad</span></div>
-        <div class="kpi"><span class="kpi__val">{{ nubosidad }}%</span><span class="kpi__lbl">Nubosidad</span></div>
+        <div class="kpi"><span class="kpi__val" id="t-f">{{ temp_f }}°F</span><span class="kpi__lbl">Fahrenheit</span></div>
+        <div class="kpi"><span class="kpi__val" id="t-idx">{{ indice }}</span><span class="kpi__lbl">Índice calor</span></div>
+        <div class="kpi"><span class="kpi__val" id="t-dif">+{{ dif_sens }}°</span><span class="kpi__lbl">Dif. sensación</span></div>
+        <div class="kpi"><span class="kpi__val" id="t-vis">{{ visibilidad }} km</span><span class="kpi__lbl">Visibilidad</span></div>
+        <div class="kpi"><span class="kpi__val" id="t-nub">{{ nubosidad }}%</span><span class="kpi__lbl">Nubosidad</span></div>
+      </div>
+      <!-- Loader inline -->
+      <div id="topbar-loader" class="topbar-loader hidden">
+        <div class="loader-ring"></div>
+        <span>Consultando…</span>
       </div>
     </div>
 
@@ -72,6 +97,12 @@
       <div class="menu-section__header">
         <h1 class="menu-section__title">Sistema de Clima</h1>
         <p class="menu-section__sub">Selecciona un módulo / Select a module</p>
+      </div>
+
+      <!-- Recomendaciones IA (se muestran al buscar) / AI recs (shown on search) -->
+      <div id="recs-section" class="recs-section hidden">
+        <p class="recs-section__title">✦ Recomendaciones del día</p>
+        <div id="recs-grid" class="recs-grid"></div>
       </div>
 
       <div class="menu-grid">
@@ -115,7 +146,7 @@
           <span class="menu-tile__num">07</span>
           <span class="menu-tile__icon">📋</span>
           <span class="menu-tile__title">Reporte profesional</span>
-          <span class="menu-tile__desc">f-strings alineados con ancho fijo</span>
+          <span class="menu-tile__desc">f-strings con ancho fijo alineado</span>
         </button>
         <button class="menu-tile menu-tile--exit" onclick="mostrarSalida()">
           <span class="menu-tile__num">08</span>
@@ -128,13 +159,13 @@
       <!-- Console input -->
       <div class="console-bar">
         <span class="console-bar__prompt">›</span>
-        <input id="console-field" type="number" min="1" max="8" placeholder="Ingrese opción (1–8)"/>
-        <button onclick="ejecutarConsola()">Ejecutar</button>
+        <input id="console-field" type="number" min="1" max="8" placeholder="Ingrese opción (1–8) / Enter option (1–8)"/>
+        <button onclick="ejecutarConsola()">Ejecutar / Run</button>
       </div>
-      <p id="error-msg" class="error-msg hidden">⚠ Opción inválida — ingrese un número del 1 al 8. / Invalid option — enter a number from 1 to 8.</p>
+      <p id="error-msg" class="error-msg hidden">⚠ Opción inválida — número del 1 al 8. / Invalid option — number from 1 to 8.</p>
     </section>
 
-    <!-- ══ BÚSQUEDA (Actividad 5) ══ -->
+    <!-- ══ BÚSQUEDA ══ -->
     <section id="busqueda-section" class="resultado-section hidden">
       <div class="resultado-header">
         <button class="btn-back" onclick="volver()">← Volver / Back</button>
@@ -142,7 +173,7 @@
       </div>
       <div class="search-box">
         <span class="search-box__icon">🔍</span>
-        <input id="search-input" type="text" placeholder="Ej: cucuta, BOGOTA, medellin…"/>
+        <input id="search-input" type="text" placeholder="cucuta, BOGOTA, medellin…" autocomplete="off"/>
         <button onclick="ejecutarBusqueda()">Buscar / Search</button>
       </div>
       <p class="search-hint">Funciona con espacios, mayúsculas o minúsculas / Works with spaces, uppercase or lowercase</p>
@@ -158,7 +189,7 @@
       <div id="resultado-grid" class="resultado-grid"></div>
     </section>
 
-    <!-- ══ REPORTE (Actividad 5) ══ -->
+    <!-- ══ REPORTE ══ -->
     <section id="reporte-section" class="resultado-section hidden">
       <div class="resultado-header">
         <button class="btn-back" onclick="volver()">← Volver / Back</button>
@@ -175,7 +206,7 @@
         <p class="salida-bye">Hasta pronto / Goodbye</p>
         <h2 class="salida-title">Sistema cerrado</h2>
         <p class="salida-sub">Gracias por usar Atmosfera. / Thank you for using Atmosfera.</p>
-        <button class="btn-back" onclick="volver()">← Volver al menú / Back to menu</button>
+        <button class="btn-back" onclick="volver()">← Volver / Back to menu</button>
       </div>
     </section>
 
