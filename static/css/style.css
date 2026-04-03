@@ -510,3 +510,45 @@ body { display: flex; min-height: 100vh; }
 @media (max-width: 540px) {
   .menu-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Búsqueda / Search box ──────────────────── */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+.search-box__icon { font-size: 1rem; }
+.search-box input {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: var(--font-body); font-size: 0.95rem; color: var(--text);
+}
+.search-box input::placeholder { color: var(--text-dim); }
+.search-box button {
+  padding: 8px 20px; background: var(--gold); border: none;
+  border-radius: 8px; color: var(--bg); font-family: var(--font-body);
+  font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: background 0.2s;
+}
+.search-box button:hover { background: #d4b88a; }
+.search-hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+
+/* ── Reporte / Report ───────────────────────── */
+.reporte-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  overflow-x: auto;
+}
+.reporte-pre {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.9;
+  white-space: pre;
+}
+.reporte-pre .accent { color: var(--gold); }

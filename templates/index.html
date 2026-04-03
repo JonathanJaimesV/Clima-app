@@ -59,34 +59,19 @@
     <!-- Top bar -->
     <div class="topbar">
       <div class="topbar__kpis">
-        <div class="kpi">
-          <span class="kpi__val">{{ temp_f }}°F</span>
-          <span class="kpi__lbl">Fahrenheit</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi__val">{{ indice }}</span>
-          <span class="kpi__lbl">Índice calor</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi__val">+{{ dif_sens }}°</span>
-          <span class="kpi__lbl">Dif. sensación</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi__val">{{ visibilidad }} km</span>
-          <span class="kpi__lbl">Visibilidad</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi__val">{{ nubosidad }}%</span>
-          <span class="kpi__lbl">Nubosidad</span>
-        </div>
+        <div class="kpi"><span class="kpi__val">{{ temp_f }}°F</span><span class="kpi__lbl">Fahrenheit</span></div>
+        <div class="kpi"><span class="kpi__val">{{ indice }}</span><span class="kpi__lbl">Índice calor</span></div>
+        <div class="kpi"><span class="kpi__val">+{{ dif_sens }}°</span><span class="kpi__lbl">Dif. sensación</span></div>
+        <div class="kpi"><span class="kpi__val">{{ visibilidad }} km</span><span class="kpi__lbl">Visibilidad</span></div>
+        <div class="kpi"><span class="kpi__val">{{ nubosidad }}%</span><span class="kpi__lbl">Nubosidad</span></div>
       </div>
     </div>
 
-    <!-- Menú -->
-    <section class="menu-section">
+    <!-- ══ MENÚ ══ -->
+    <section class="menu-section" id="menu-section">
       <div class="menu-section__header">
         <h1 class="menu-section__title">Sistema de Clima</h1>
-        <p class="menu-section__sub">Selecciona un módulo para ejecutar</p>
+        <p class="menu-section__sub">Selecciona un módulo / Select a module</p>
       </div>
 
       <div class="menu-grid">
@@ -94,7 +79,7 @@
           <span class="menu-tile__num">01</span>
           <span class="menu-tile__icon">🌡</span>
           <span class="menu-tile__title">Clima actual</span>
-          <span class="menu-tile__desc">Todos los datos del sistema</span>
+          <span class="menu-tile__desc">Ver todos los datos del sistema</span>
         </button>
         <button class="menu-tile" onclick="ejecutar(2)">
           <span class="menu-tile__num">02</span>
@@ -111,7 +96,7 @@
         <button class="menu-tile" onclick="ejecutar(4)">
           <span class="menu-tile__num">04</span>
           <span class="menu-tile__icon">☂️</span>
-          <span class="menu-tile__title">Probabilidad lluvia</span>
+          <span class="menu-tile__title">Prob. de lluvia</span>
           <span class="menu-tile__desc">Estimación basada en nubosidad</span>
         </button>
         <button class="menu-tile" onclick="ejecutar(5)">
@@ -120,39 +105,77 @@
           <span class="menu-tile__title">Promedio del día</span>
           <span class="menu-tile__desc">Temperaturas cada 4 horas</span>
         </button>
-        <button class="menu-tile menu-tile--exit" onclick="mostrarSalida()">
+        <button class="menu-tile" onclick="mostrarBusqueda()">
           <span class="menu-tile__num">06</span>
+          <span class="menu-tile__icon">🔍</span>
+          <span class="menu-tile__title">Buscar ciudad</span>
+          <span class="menu-tile__desc">Búsqueda insensible a mayúsculas</span>
+        </button>
+        <button class="menu-tile" onclick="ejecutarReporte()">
+          <span class="menu-tile__num">07</span>
+          <span class="menu-tile__icon">📋</span>
+          <span class="menu-tile__title">Reporte profesional</span>
+          <span class="menu-tile__desc">f-strings alineados con ancho fijo</span>
+        </button>
+        <button class="menu-tile menu-tile--exit" onclick="mostrarSalida()">
+          <span class="menu-tile__num">08</span>
           <span class="menu-tile__icon">✕</span>
-          <span class="menu-tile__title">Salir</span>
+          <span class="menu-tile__title">Salir / Exit</span>
           <span class="menu-tile__desc">Cerrar el sistema</span>
         </button>
       </div>
 
-      <!-- Input consola -->
+      <!-- Console input -->
       <div class="console-bar">
         <span class="console-bar__prompt">›</span>
-        <input id="console-field" type="number" min="1" max="6" placeholder="Ingrese opción (1–6)"/>
+        <input id="console-field" type="number" min="1" max="8" placeholder="Ingrese opción (1–8)"/>
         <button onclick="ejecutarConsola()">Ejecutar</button>
       </div>
-      <p id="error-msg" class="error-msg hidden">⚠ Opción inválida — ingrese un número del 1 al 6.</p>
+      <p id="error-msg" class="error-msg hidden">⚠ Opción inválida — ingrese un número del 1 al 8. / Invalid option — enter a number from 1 to 8.</p>
     </section>
 
-    <!-- Resultado -->
+    <!-- ══ BÚSQUEDA (Actividad 5) ══ -->
+    <section id="busqueda-section" class="resultado-section hidden">
+      <div class="resultado-header">
+        <button class="btn-back" onclick="volver()">← Volver / Back</button>
+        <h2 class="resultado-titulo">Buscar Ciudad / Search City</h2>
+      </div>
+      <div class="search-box">
+        <span class="search-box__icon">🔍</span>
+        <input id="search-input" type="text" placeholder="Ej: cucuta, BOGOTA, medellin…"/>
+        <button onclick="ejecutarBusqueda()">Buscar / Search</button>
+      </div>
+      <p class="search-hint">Funciona con espacios, mayúsculas o minúsculas / Works with spaces, uppercase or lowercase</p>
+      <div id="search-result" class="resultado-grid" style="margin-top:20px;"></div>
+    </section>
+
+    <!-- ══ RESULTADO ══ -->
     <section id="resultado-section" class="resultado-section hidden">
       <div class="resultado-header">
-        <button class="btn-back" onclick="volver()">← Volver</button>
+        <button class="btn-back" onclick="volver()">← Volver / Back</button>
         <h2 id="resultado-titulo" class="resultado-titulo">—</h2>
       </div>
       <div id="resultado-grid" class="resultado-grid"></div>
     </section>
 
-    <!-- Salida -->
+    <!-- ══ REPORTE (Actividad 5) ══ -->
+    <section id="reporte-section" class="resultado-section hidden">
+      <div class="resultado-header">
+        <button class="btn-back" onclick="volver()">← Volver / Back</button>
+        <h2 class="resultado-titulo">Reporte Profesional / Professional Report</h2>
+      </div>
+      <div class="reporte-box">
+        <pre id="reporte-pre" class="reporte-pre"></pre>
+      </div>
+    </section>
+
+    <!-- ══ SALIDA ══ -->
     <section id="salida-section" class="salida-section hidden">
       <div class="salida-inner">
-        <p class="salida-bye">Hasta pronto</p>
+        <p class="salida-bye">Hasta pronto / Goodbye</p>
         <h2 class="salida-title">Sistema cerrado</h2>
-        <p class="salida-sub">Gracias por usar Atmosfera.</p>
-        <button class="btn-back" onclick="volver()">← Volver al menú</button>
+        <p class="salida-sub">Gracias por usar Atmosfera. / Thank you for using Atmosfera.</p>
+        <button class="btn-back" onclick="volver()">← Volver al menú / Back to menu</button>
       </div>
     </section>
 
