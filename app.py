@@ -2,7 +2,7 @@
 # Proyecto : Atmosfera — Sistema de Clima con IA
 # Project  : Atmosfera — AI-Powered Weather System
 # Autor    : Jonathan
-# Archivo  : atmosfera.py
+# Archivo  : app.py
 # ==============================================================
 # Arquitectura : Top-Down | Modular | Validación Robusta
 # Architecture : Top-Down | Modular | Robust Validation
