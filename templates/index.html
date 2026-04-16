@@ -12,213 +12,253 @@
 </head>
 <body>
 
-  <div class="grain"></div>
-  <canvas id="bg-canvas"></canvas>
-
-  <!-- ══ MOBILE NAVBAR ══ -->
-  <nav class="mobile-nav">
-    <div class="mobile-nav__brand">
-      <span class="mobile-nav__dot"></span>
-      <span class="mobile-nav__name">atmosfera</span>
+  <!-- ══════════════════════════════════════════════════
+       PANTALLA DE INTRODUCCIÓN / INTRO SCREEN
+       Planeta Tierra 3D con Three.js — se oculta al cargar
+       3D Earth with Three.js — hidden after loading
+       ══════════════════════════════════════════════════ -->
+  <div id="intro-screen" class="intro-screen">
+    <canvas id="globe-canvas"></canvas>
+    <div class="intro-content">
+      <div class="intro-logo">
+        <span class="intro-dot"></span>
+        <span class="intro-name">atmosfera</span>
+      </div>
+      <p class="intro-tagline">Sistema de Clima con IA</p>
+      <div class="intro-loader">
+        <div class="intro-loader__bar"></div>
+      </div>
+      <p class="intro-hint">Cargando datos del sistema…</p>
     </div>
-    <button class="mobile-nav__menu" id="mobile-menu-btn" aria-label="Menú">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-
-  <!-- Overlay para cerrar drawer / Overlay to close drawer -->
-  <div class="mobile-overlay" id="mobile-overlay"></div>
-
-  <div class="layout">
-
-    <!-- ══ SIDEBAR / DRAWER ══ -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar__brand">
-        <span class="sidebar__dot"></span>
-        <span class="sidebar__name">atmosfera</span>
-      </div>
-
-      <div class="sidebar__search">
-        <input id="sidebar-input" type="text" placeholder="Buscar ciudad…" autocomplete="off" spellcheck="false"/>
-        <button id="sidebar-btn" aria-label="Buscar">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </button>
-      </div>
-
-      <div class="sidebar__location">
-        <p class="sidebar__city" id="s-ciudad">{{ ciudad }}</p>
-        <p class="sidebar__country" id="s-pais">{{ pais }}</p>
-      </div>
-
-      <div class="sidebar__temp-big">
-        <span class="sidebar__deg" id="s-temp">{{ temperatura }}</span>
-        <span class="sidebar__unit">°C</span>
-      </div>
-      <p class="sidebar__desc" id="s-desc">{{ descripcion }}</p>
-
-      <div class="sidebar__stats">
-        <div class="sidebar__stat">
-          <span class="sidebar__stat-val" id="s-sens">{{ sensacion }}°</span>
-          <span class="sidebar__stat-lbl">Sensación</span>
-        </div>
-        <div class="sidebar__stat">
-          <span class="sidebar__stat-val" id="s-hum">{{ humedad }}%</span>
-          <span class="sidebar__stat-lbl">Humedad</span>
-        </div>
-        <div class="sidebar__stat">
-          <span class="sidebar__stat-val" id="s-viento">{{ viento }}</span>
-          <span class="sidebar__stat-lbl">km/h</span>
-        </div>
-      </div>
-
-      <div class="sidebar__rec" id="sidebar-rec">
-        <span class="sidebar__rec-icon">✦</span>
-        <p class="sidebar__rec-text" id="s-rec">{{ recomendacion }}</p>
-      </div>
-
-      <div class="sidebar__cities">
-        <p class="sidebar__cities-title">Ciudades precargadas</p>
-        {% for c in ciudades_lista %}
-        <button class="sidebar__city-btn" onclick="buscarCiudad('{{ c.nombre }}')">
-          {{ c.nombre }}
-          <span>{{ c.temp }}°C</span>
-        </button>
-        {% endfor %}
-      </div>
-    </aside>
-
-    <!-- ══ MAIN ══ -->
-    <main class="main">
-
-      <!-- Topbar KPIs -->
-      <div class="topbar">
-        <div class="topbar__kpis">
-          <div class="kpi"><span class="kpi__val" id="t-f">{{ temp_f }}°F</span><span class="kpi__lbl">Fahrenheit</span></div>
-          <div class="kpi"><span class="kpi__val" id="t-idx">{{ indice }}</span><span class="kpi__lbl">Índice calor</span></div>
-          <div class="kpi"><span class="kpi__val" id="t-dif">+{{ dif_sens }}°</span><span class="kpi__lbl">Dif. sensación</span></div>
-          <div class="kpi"><span class="kpi__val" id="t-vis">{{ visibilidad }} km</span><span class="kpi__lbl">Visibilidad</span></div>
-          <div class="kpi"><span class="kpi__val" id="t-nub">{{ nubosidad }}%</span><span class="kpi__lbl">Nubosidad</span></div>
-        </div>
-        <div id="topbar-loader" class="topbar-loader hidden">
-          <div class="loader-ring"></div>
-          <span>Consultando…</span>
-        </div>
-      </div>
-
-      <!-- ══ MENÚ ══ -->
-      <section class="menu-section" id="menu-section">
-        <div class="menu-section__header">
-          <h1 class="menu-section__title">Sistema de Clima</h1>
-          <p class="menu-section__sub">Selecciona un módulo / Select a module</p>
-        </div>
-
-        <!-- Recomendaciones IA -->
-        <div id="recs-section" class="recs-section hidden">
-          <p class="recs-section__title">✦ Recomendaciones del día / Daily recommendations</p>
-          <div id="recs-grid" class="recs-grid"></div>
-        </div>
-
-        <div class="menu-grid">
-          <button class="menu-tile" onclick="ejecutar(1)">
-            <span class="menu-tile__num">01</span>
-            <span class="menu-tile__icon">🌡</span>
-            <span class="menu-tile__title">Clima actual</span>
-            <span class="menu-tile__desc">Todos los datos del sistema</span>
-          </button>
-          <button class="menu-tile" onclick="ejecutar(2)">
-            <span class="menu-tile__num">02</span>
-            <span class="menu-tile__icon">🔄</span>
-            <span class="menu-tile__title">Conversión °C → °F</span>
-            <span class="menu-tile__desc">Temperatura en Fahrenheit</span>
-          </button>
-          <button class="menu-tile" onclick="ejecutar(3)">
-            <span class="menu-tile__num">03</span>
-            <span class="menu-tile__icon">🔥</span>
-            <span class="menu-tile__title">Índice de calor</span>
-            <span class="menu-tile__desc">Temperatura percibida</span>
-          </button>
-          <button class="menu-tile" onclick="ejecutar(4)">
-            <span class="menu-tile__num">04</span>
-            <span class="menu-tile__icon">☂️</span>
-            <span class="menu-tile__title">Prob. de lluvia</span>
-            <span class="menu-tile__desc">Estimación por nubosidad</span>
-          </button>
-          <button class="menu-tile" onclick="ejecutar(5)">
-            <span class="menu-tile__num">05</span>
-            <span class="menu-tile__icon">📊</span>
-            <span class="menu-tile__title">Promedio del día</span>
-            <span class="menu-tile__desc">Temperaturas cada 4h</span>
-          </button>
-          <button class="menu-tile" onclick="mostrarBusqueda()">
-            <span class="menu-tile__num">06</span>
-            <span class="menu-tile__icon">🔍</span>
-            <span class="menu-tile__title">Buscar ciudad</span>
-            <span class="menu-tile__desc">Búsqueda inteligente</span>
-          </button>
-          <button class="menu-tile" onclick="ejecutarReporte()">
-            <span class="menu-tile__num">07</span>
-            <span class="menu-tile__icon">📋</span>
-            <span class="menu-tile__title">Reporte</span>
-            <span class="menu-tile__desc">f-strings alineados</span>
-          </button>
-          <button class="menu-tile menu-tile--exit" onclick="mostrarSalida()">
-            <span class="menu-tile__num">08</span>
-            <span class="menu-tile__icon">✕</span>
-            <span class="menu-tile__title">Salir / Exit</span>
-            <span class="menu-tile__desc">Cerrar el sistema</span>
-          </button>
-        </div>
-        <p id="error-msg" class="error-msg hidden">⚠ Opción inválida — número del 1 al 8 / Invalid option — number from 1 to 8.</p>
-      </section>
-
-      <!-- ══ BÚSQUEDA ══ -->
-      <section id="busqueda-section" class="resultado-section hidden">
-        <div class="resultado-header">
-          <button class="btn-back" onclick="volver()">← Volver</button>
-          <h2 class="resultado-titulo">Buscar Ciudad</h2>
-        </div>
-        <div class="search-box">
-          <span class="search-box__icon">🔍</span>
-          <input id="search-input" type="text" placeholder="cucuta, BOGOTA, Medellin…" autocomplete="off"/>
-          <button onclick="ejecutarBusqueda()">Buscar</button>
-        </div>
-        <p class="search-hint">Funciona con mayúsculas, minúsculas o espacios / Works with any capitalization</p>
-        <div id="search-result" class="resultado-grid" style="margin-top:18px;"></div>
-      </section>
-
-      <!-- ══ RESULTADO ══ -->
-      <section id="resultado-section" class="resultado-section hidden">
-        <div class="resultado-header">
-          <button class="btn-back" onclick="volver()">← Volver</button>
-          <h2 id="resultado-titulo" class="resultado-titulo">—</h2>
-        </div>
-        <div id="resultado-grid" class="resultado-grid"></div>
-      </section>
-
-      <!-- ══ REPORTE ══ -->
-      <section id="reporte-section" class="resultado-section hidden">
-        <div class="resultado-header">
-          <button class="btn-back" onclick="volver()">← Volver</button>
-          <h2 class="resultado-titulo">Reporte Profesional</h2>
-        </div>
-        <div class="reporte-box">
-          <pre id="reporte-pre" class="reporte-pre"></pre>
-        </div>
-      </section>
-
-      <!-- ══ SALIDA ══ -->
-      <section id="salida-section" class="salida-section hidden">
-        <div class="salida-inner">
-          <p class="salida-bye">Hasta pronto / Goodbye</p>
-          <h2 class="salida-title">Sistema cerrado</h2>
-          <p class="salida-sub">Gracias por usar Atmosfera. / Thank you for using Atmosfera.</p>
-          <button class="btn-back" onclick="volver()">← Volver al menú</button>
-        </div>
-      </section>
-
-    </main>
   </div>
 
+  <!-- ══ APP ══ -->
+  <div id="app-root" class="app-root hidden">
+
+    <div class="grain"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- ══ MOBILE NAVBAR ══ -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav__brand">
+        <span class="mobile-nav__dot"></span>
+        <span class="mobile-nav__name">atmosfera</span>
+      </div>
+      <button class="mobile-nav__menu" id="mobile-menu-btn" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+
+    <div class="layout">
+
+      <!-- ══ SIDEBAR ══ -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar__brand">
+          <span class="sidebar__dot"></span>
+          <span class="sidebar__name">atmosfera</span>
+        </div>
+
+        <div class="sidebar__search">
+          <input id="sidebar-input" type="text" placeholder="Buscar ciudad…" autocomplete="off" spellcheck="false"/>
+          <button id="sidebar-btn" aria-label="Buscar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+
+        <div class="sidebar__location">
+          <p class="sidebar__city" id="s-ciudad">{{ ciudad }}</p>
+          <p class="sidebar__country" id="s-pais">{{ pais }}</p>
+        </div>
+
+        <div class="sidebar__temp-big">
+          <span class="sidebar__deg" id="s-temp">{{ temperatura }}</span>
+          <span class="sidebar__unit">°C</span>
+        </div>
+        <p class="sidebar__desc" id="s-desc">{{ descripcion }}</p>
+
+        <div class="sidebar__stats">
+          <div class="sidebar__stat">
+            <span class="sidebar__stat-val" id="s-sens">{{ sensacion }}°</span>
+            <span class="sidebar__stat-lbl">Sensación</span>
+          </div>
+          <div class="sidebar__stat">
+            <span class="sidebar__stat-val" id="s-hum">{{ humedad }}%</span>
+            <span class="sidebar__stat-lbl">Humedad</span>
+          </div>
+          <div class="sidebar__stat">
+            <span class="sidebar__stat-val" id="s-viento">{{ viento }}</span>
+            <span class="sidebar__stat-lbl">km/h</span>
+          </div>
+        </div>
+
+        <div class="sidebar__rec">
+          <span class="sidebar__rec-icon">✦</span>
+          <p class="sidebar__rec-text" id="s-rec">{{ recomendacion }}</p>
+        </div>
+
+        <!-- Historial de búsquedas / Search history -->
+        <div class="sidebar__history" id="sidebar-history">
+          <p class="sidebar__cities-title">Historial / Recent</p>
+          <div id="history-list" class="history-list"></div>
+        </div>
+
+        <!-- Ciudades precargadas / Preloaded cities -->
+        <div class="sidebar__cities">
+          <p class="sidebar__cities-title">Ciudades precargadas</p>
+          {% for c in ciudades_lista %}
+          <button class="sidebar__city-btn" onclick="buscarCiudad('{{ c.nombre }}')">
+            {{ c.nombre }}
+            <span>{{ c.temp }}°C</span>
+          </button>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <!-- ══ MAIN ══ -->
+      <main class="main">
+
+        <div class="topbar">
+          <div class="topbar__kpis">
+            <div class="kpi"><span class="kpi__val" id="t-f">{{ temp_f }}°F</span><span class="kpi__lbl">Fahrenheit</span></div>
+            <div class="kpi"><span class="kpi__val" id="t-idx">{{ indice }}</span><span class="kpi__lbl">Índice calor</span></div>
+            <div class="kpi"><span class="kpi__val" id="t-dif">+{{ dif_sens }}°</span><span class="kpi__lbl">Dif. sensación</span></div>
+            <div class="kpi"><span class="kpi__val" id="t-vis">{{ visibilidad }} km</span><span class="kpi__lbl">Visibilidad</span></div>
+            <div class="kpi"><span class="kpi__val" id="t-nub">{{ nubosidad }}%</span><span class="kpi__lbl">Nubosidad</span></div>
+          </div>
+          <div id="topbar-loader" class="topbar-loader hidden">
+            <div class="loader-ring"></div>
+            <span>Consultando…</span>
+          </div>
+        </div>
+
+        <!-- ══ MENÚ ══ -->
+        <section class="menu-section" id="menu-section">
+          <div class="menu-section__header">
+            <h1 class="menu-section__title">Sistema de Clima</h1>
+            <p class="menu-section__sub">Selecciona un módulo / Select a module</p>
+          </div>
+
+          <div id="recs-section" class="recs-section hidden">
+            <p class="recs-section__title">✦ Recomendaciones del día / Daily recommendations</p>
+            <div id="recs-grid" class="recs-grid"></div>
+          </div>
+
+          <div class="menu-grid">
+            <button class="menu-tile" onclick="ejecutar(1)">
+              <span class="menu-tile__num">01</span>
+              <span class="menu-tile__icon">🌡</span>
+              <span class="menu-tile__title">Clima actual</span>
+              <span class="menu-tile__desc">Todos los datos del sistema</span>
+            </button>
+            <button class="menu-tile" onclick="ejecutar(2)">
+              <span class="menu-tile__num">02</span>
+              <span class="menu-tile__icon">🔄</span>
+              <span class="menu-tile__title">Conversión °C → °F</span>
+              <span class="menu-tile__desc">Temperatura en Fahrenheit</span>
+            </button>
+            <button class="menu-tile" onclick="ejecutar(3)">
+              <span class="menu-tile__num">03</span>
+              <span class="menu-tile__icon">🔥</span>
+              <span class="menu-tile__title">Índice de calor</span>
+              <span class="menu-tile__desc">Temperatura percibida</span>
+            </button>
+            <button class="menu-tile" onclick="ejecutar(4)">
+              <span class="menu-tile__num">04</span>
+              <span class="menu-tile__icon">☂️</span>
+              <span class="menu-tile__title">Prob. de lluvia</span>
+              <span class="menu-tile__desc">Estimación por nubosidad</span>
+            </button>
+            <button class="menu-tile" onclick="ejecutar(5)">
+              <span class="menu-tile__num">05</span>
+              <span class="menu-tile__icon">📊</span>
+              <span class="menu-tile__title">Promedio del día</span>
+              <span class="menu-tile__desc">Temperaturas cada 4h</span>
+            </button>
+            <button class="menu-tile" onclick="mostrarBusqueda()">
+              <span class="menu-tile__num">06</span>
+              <span class="menu-tile__icon">🔍</span>
+              <span class="menu-tile__title">Buscar ciudad</span>
+              <span class="menu-tile__desc">Búsqueda inteligente</span>
+            </button>
+            <button class="menu-tile" onclick="ejecutarReporte()">
+              <span class="menu-tile__num">07</span>
+              <span class="menu-tile__icon">📋</span>
+              <span class="menu-tile__title">Reporte</span>
+              <span class="menu-tile__desc">f-strings alineados</span>
+            </button>
+            <button class="menu-tile menu-tile--exit" onclick="mostrarSalida()">
+              <span class="menu-tile__num">08</span>
+              <span class="menu-tile__icon">✕</span>
+              <span class="menu-tile__title">Salir / Exit</span>
+              <span class="menu-tile__desc">Cerrar el sistema</span>
+            </button>
+          </div>
+
+          <div class="console-bar">
+            <span class="console-bar__prompt">›</span>
+            <input id="console-field" type="number" min="1" max="8" placeholder="Ingrese opción 1–8"/>
+            <button onclick="ejecutarConsola()">Ejecutar</button>
+          </div>
+          <p id="error-msg" class="error-msg hidden">⚠ Opción inválida — número del 1 al 8.</p>
+        </section>
+
+        <!-- ══ BÚSQUEDA ══ -->
+        <section id="busqueda-section" class="resultado-section hidden">
+          <div class="resultado-header">
+            <button class="btn-back" onclick="volver()">← Volver</button>
+            <h2 class="resultado-titulo">Buscar Ciudad</h2>
+          </div>
+          <div class="search-box">
+            <span class="search-box__icon">🔍</span>
+            <input id="search-input" type="text" placeholder="cucuta, BOGOTA, Medellin…" autocomplete="off"/>
+            <button onclick="ejecutarBusqueda()">Buscar</button>
+          </div>
+          <p class="search-hint">Funciona con mayúsculas, minúsculas o espacios</p>
+
+          <!-- Panel de historial en búsqueda / Search history panel -->
+          <div id="search-history-panel" class="search-history-panel"></div>
+
+          <div id="search-result" class="resultado-grid" style="margin-top:18px;"></div>
+        </section>
+
+        <!-- ══ RESULTADO ══ -->
+        <section id="resultado-section" class="resultado-section hidden">
+          <div class="resultado-header">
+            <button class="btn-back" onclick="volver()">← Volver</button>
+            <h2 id="resultado-titulo" class="resultado-titulo">—</h2>
+          </div>
+          <div id="resultado-grid" class="resultado-grid"></div>
+        </section>
+
+        <!-- ══ REPORTE ══ -->
+        <section id="reporte-section" class="resultado-section hidden">
+          <div class="resultado-header">
+            <button class="btn-back" onclick="volver()">← Volver</button>
+            <h2 class="resultado-titulo">Reporte Profesional</h2>
+          </div>
+          <div class="reporte-box">
+            <pre id="reporte-pre" class="reporte-pre"></pre>
+          </div>
+        </section>
+
+        <!-- ══ SALIDA ══ -->
+        <section id="salida-section" class="salida-section hidden">
+          <div class="salida-inner">
+            <p class="salida-bye">Hasta pronto / Goodbye</p>
+            <h2 class="salida-title">Sistema cerrado</h2>
+            <p class="salida-sub">Gracias por usar Atmosfera.</p>
+            <button class="btn-back" onclick="volver()">← Volver al menú</button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Three.js para el globo / Three.js for the globe -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="/static/js/app.js"></script>
 </body>
 </html>
